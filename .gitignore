@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.env
+venv/
+.idea/
+
+# Project specific
+tensorboard_logs/*
+!tensorboard_logs/.gitkeep
+models/*
+!models/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.iml
