@@ -113,6 +113,11 @@ View training progress:
 ```bash
 tensorboard --logdir tensorboard_logs
 ```
+## Future Improvements
+- [ ] Add dynamic obstacles for collision avoidance training
+- [ ] Implement path following with waypoint navigation
+- [ ] Introduce moving objects for complex environment interactions
+- [ ] Develop multi-objective learning capabilities
 
 ## License
 MIT License
