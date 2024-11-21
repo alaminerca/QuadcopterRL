@@ -1,8 +1,8 @@
 # QuadcopterRL: Reinforcement Learning for Drone Stabilization
 
-A PyBullet-based drone simulation using PPO (Proximal Policy Optimization) for learning hover and stabilization behaviors.
+A PyBullet-based drone simulation using PPO (Proximal Policy Optimization) for autonomous hover and stabilization.
 
-## Quick Start
+## Setup and Installation
 
 ```bash
 # Create environment
@@ -11,116 +11,65 @@ conda activate drone_rl
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
-# Run training (optional, if you want to train from scratch)
-python train.py
+## Project Structure
+```
+QuadcopterRL/
+├── drone_env.py          # Drone environment with PyBullet physics
+├── run_model.py          # Visualization code
+├── train.py             # Training script (optional)
+├── requirements.txt     # Package dependencies
+├── models/              # Model directory
+│   └── drone_final/    # Trained model (2.5M steps)
+└── images/             # Training metrics visualizations
+```
 
-# Run only visualization with pre-trained model
+## Training Metrics
+![Value Loss](images/train vs value_loss.png)
+![Explained Variance](images/train vs explained_variance)
+![Policy Loss](images/train vs policy_gradient_loss.png)
+
+## Run Pre-trained Model
+```bash
 python run_model.py
 ```
 
-## Run Pre-trained Model
-
-Create a new file `run_model.py`:
-
-```python
-import os
-os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
-
-from stable_baselines3 import PPO
-from drone_env import DroneRLEnv
-import time
-
-def visualize_trained_model(model_path="drone_final", episodes=5):
-    # Load model
-    model = PPO.load(model_path)
-    env = DroneRLEnv()
-    
-    try:
-        for episode in range(episodes):
-            obs, _ = env.reset()
-            done = False
-            episode_reward = 0
-            step = 0
-            
-            print(f"\nEpisode {episode + 1}")
-            print("Target height: 1.0m")
-            
-            while not done:
-                action, _ = model.predict(obs)
-                obs, reward, terminated, truncated, _ = env.step(action)
-                episode_reward += reward
-                done = terminated or truncated
-                
-                if step % 20 == 0:  # Print every 20 steps
-                    print(f"Height: {obs[2]:.2f}m | Reward: {reward:.2f}")
-                
-                step += 1
-                time.sleep(1/30)  # Adjust for slower/faster visualization
-            
-            print(f"Episode {episode + 1} finished with reward: {episode_reward:.2f}")
-            
-    except KeyboardInterrupt:
-        print("\nVisualization stopped by user")
-    finally:
-        env.close()
-
-if __name__ == "__main__":
-    visualize_trained_model()
-```
-
-## Training Details
-
-The model was trained for 2,500,000 iterations with the following parameters:
-- Learning rate: 3e-4
-- Batch size: 64
-- Policy: MLP [64, 64]
-- Value network: MLP [64, 64]
-- Activation: ReLU
-- GAE Lambda: 0.95
-- Entropy coefficient: 0.01
+## Model Details
+- Training steps: 2.5M
+- Algorithm: PPO (Proximal Policy Optimization)
+- Physics: PyBullet engine
+- Target behavior: Stable hovering at 1.0m height
 
 ## Environment Parameters
-
-The drone environment uses realistic physics parameters:
 - Drone mass: 0.5 kg (body) + 0.2 kg (rotors)
-- Target height: 1.0m
 - Max force per rotor: 2.58N
 - Hover force needed: 6.87N
 - Force per rotor at hover: 1.72N
 
-## Project Structure
-```
-drone_rl_project/
-├── drone_env.py          # Drone environment with PyBullet physics
-├── train.py             # Training script with PPO
-├── run_model.py         # Script to run trained model
-├── requirements.txt     # Project dependencies
-├── models/              # Saved model checkpoints
-│   └── drone_final      # Trained for 2.5M steps
-└── tensorboard_logs/    # Training metrics
-```
-
-## Visualization Controls
-- Speed: Adjust `time.sleep(1/30)` in `run_model.py`
-  - 1/60: Fast playback
-  - 1/30: Normal speed
-  - 1/20: Slow motion
-  - 1/10: Very slow
-
-## Training Metrics
-View training progress:
-```bash
-tensorboard --logdir tensorboard_logs
-```
 ## Future Improvements
-- [ ] Add dynamic obstacles for collision avoidance training
-- [ ] Implement path following with waypoint navigation
-- [ ] Introduce moving objects for complex environment interactions
-- [ ] Develop multi-objective learning capabilities
+- [ ] Dynamic obstacle integration for collision avoidance
+- [ ] Path following with waypoint navigation
+- [ ] Moving objects for complex environment interactions
+- [ ] Multi-objective learning capabilities
+
+## Requirements
+- Python 3.9
+- NVIDIA GPU recommended, but not mandatory.
+- Key packages in requirements.txt
+
+## Package Versions
+```
+numpy==1.24.3
+torch==2.1.0
+gymnasium==0.29.1
+pybullet==3.2.5
+stable-baselines3==2.1.0
+tensorboard==2.14.0
+```
+
+## Author
+[MOUHAMAD A. Al-amine](https://github.com/alaminerca)
 
 ## License
 MIT License
-
-## Contributing
-Issues and pull requests are welcome!
